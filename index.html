@@ -1474,7 +1474,7 @@ const TR = {"IA":["IA","AA","IA","AI","IA"],
 "Preparado con ayuda de IA ({0}) y revisado por la asociación.":["Preparat amb ajuda d’IA ({0}) i revisat per l’associació.","AAren laguntzaz prestatua ({0}) eta elkarteak berrikusia.","Preparado con axuda de IA ({0}) e revisado pola asociación.","Prepared with AI assistance ({0}) and reviewed by the association.","Preparado com ajuda de IA ({0}) e revisto pela associação."],
 "…":["…","…","…","…","…"],
 "Nombre de la asociación":["Nom de l’associació","Elkartearen izena","Nome da asociación","Name of the association","Nome da associação"],
-"Patología o ámbito":["Patologia o àmbit","Patologia edo esparrua","Patoloxía ou ámbito","Condition or field","Patologia ou âmbito"],
+"Enfermedad o condición":["Malaltia o condició","Gaixotasuna edo egoera","Enfermidade ou condición","Disease or condition","Doença ou condição"],
 "Misión, en una o dos frases":["Missió, en una o dues frases","Misioa, esaldi bat edo bitan","Misión, nunha ou dúas frases","Mission, in one or two sentences","Missão, numa ou duas frases"],
 "Cómo os gusta escribir (tono)":["Com us agrada escriure (to)","Nola idaztea gustatzen zaizuen (tonua)","Como vos gusta escribir (ton)","How you like to write (tone)","Como gostam de escrever (tom)"],
 "Por ejemplo: cercano, claro y positivo":["Per exemple: proper, clar i positiu","Adibidez: hurbila, argia eta baikorra","Por exemplo: próximo, claro e positivo","For example: warm, clear and positive","Por exemplo: próximo, claro e positivo"],
@@ -1482,8 +1482,8 @@ const TR = {"IA":["IA","AA","IA","AI","IA"],
 "Siglas":["Sigles","Siglak","Siglas","Acronym","Sigla"],
 "Territorio":["Territori","Lurraldea","Territorio","Territory","Território"],
 "A quién os dirigís (uno por línea)":["A qui us adreceu (un per línia)","Nori zuzentzen zatzaizkioten (bat lerro bakoitzeko)","A quen vos dirixides (un por liña)","Who you address (one per line)","A quem se dirigem (um por linha)"],
-"Fuentes de confianza (Nombre | enlace, una por línea)":["Fonts de confiança (Nom | enllaç, una per línia)","Konfiantzazko iturriak (Izena | esteka, bat lerro bakoitzeko)","Fontes de confianza (Nome | ligazón, unha por liña)","Trusted sources (Name | link, one per line)","Fontes de confiança (Nome | ligação, uma por linha)"],
-"Fechas clave (MM-DD | nombre, una por línea)":["Dates clau (MM-DD | nom, una per línia)","Data garrantzitsuak (HH-EE | izena, bat lerro bakoitzeko)","Datas clave (MM-DD | nome, unha por liña)","Key dates (MM-DD | name, one per line)","Datas-chave (MM-DD | nome, uma por linha)"],
+"Fuentes aprobadas (una por línea)":["Fonts aprovades (una per línia)","Onartutako iturriak (bat lerroko)","Fontes aprobadas (unha por liña)","Approved sources (one per line)","Fontes aprovadas (uma por linha)"],
+"Fechas clave (una por línea, dd/mm y nombre)":["Dates clau (una per línia, dd/mm i nom)","Data garrantzitsuak (bat lerroko, ee/hh eta izena)","Datas clave (unha por liña, dd/mm e nome)","Key dates (one per line, dd/mm and name)","Datas-chave (uma por linha, dd/mm e nome)"],
 "Revisión sanitaria a cargo de":["Revisió sanitària a càrrec de","Osasun-berrikuspenaren arduraduna","Revisión sanitaria a cargo de","Health review carried out by","Revisão sanitária a cargo de"],
 "Acta de una reunión":["Acta d’una reunió","Bilera baten akta","Acta dunha reunión","Meeting minutes","Ata de uma reunião"],
 "Sube tus notas, la grabación o un borrador":["Puja les teves notes, l’enregistrament o un esborrany","Igo zure oharrak, grabazioa edo zirriborro bat","Sube as túas notas, a gravación ou un borrador","Upload your notes, the recording or a draft","Carregue as suas notas, a gravação ou um rascunho"],
@@ -1527,20 +1527,22 @@ const I18N = (() => { const L5 = ['ca', 'eu', 'gl', 'en', 'pt'], o = {ca: {}, eu
 
 /* ══ Datos de JuntIA: tipos de documento, campos del perfil y ejemplo. L('…') marca textos de interfaz (se traducen al pintar). ══ */
 const L = s => s;
-const VERSION = '1.0.0';
-const PERFIL_FMT = 'propatiens-perfil/1';   // formato común del perfil en las apps del curso (también se lee el expediente de AsociacIA)
+const VERSION = '1.1.0';
+const PERFIL_FMT = 'perfil-asociacion-pacientes';   // formato común del perfil en las apps del curso (el mismo que DifundIA, SubvencIA y EncuestIA)
+const PERFIL_FMT_ANT = 'propatiens-perfil/1';        // formato anterior de JuntIA: se sigue leyendo (y también el expediente de AsociacIA)
+const PERFIL_OCULTOS = ['web', 'redes', 'hashtags', 'eslogan', 'color1', 'color2', 'logo'];   // campos comunes que JuntIA no usa: se conservan para devolverlos al descargar
 /* campos del perfil: los cinco primeros se ven siempre; el resto, en «Más datos» */
 const PERFIL_CAMPOS = [
   {k: 'nombre', l: L('Nombre de la asociación'), req: true},
-  {k: 'patologia', l: L('Patología o ámbito')},
+  {k: 'ambito', l: L('Enfermedad o condición')},
   {k: 'mision', l: L('Misión, en una o dos frases'), area: 2},
   {k: 'tono', l: L('Cómo os gusta escribir (tono)'), area: 2, ph: L('Por ejemplo: cercano, claro y positivo')},
   {k: 'evitar', l: L('Expresiones que evitáis (una por línea)'), area: 2},
   {k: 'siglas', l: L('Siglas'), mas: true},
   {k: 'territorio', l: L('Territorio'), mas: true},
   {k: 'publicos', l: L('A quién os dirigís (uno por línea)'), area: 3, mas: true},
-  {k: 'fuentes', l: L('Fuentes de confianza (Nombre | enlace, una por línea)'), area: 3, mas: true},
-  {k: 'calendario', l: L('Fechas clave (MM-DD | nombre, una por línea)'), area: 2, mas: true},
+  {k: 'fuentes', l: L('Fuentes aprobadas (una por línea)'), area: 3, mas: true},
+  {k: 'fechas', l: L('Fechas clave (una por línea, dd/mm y nombre)'), area: 2, mas: true},
   {k: 'revisor', l: L('Revisión sanitaria a cargo de'), mas: true}
 ];
 /* lo que puede pedir la persona: una tarjeta grande por tipo. instr va a la IA en español; el idioma del resultado lo marca INSTR_IDIOMA() */
@@ -1739,7 +1741,7 @@ const chip = (cls, tx) => `<span class="fa-chip ${cls}">${esc(tx)}</span>`;
 function aplicaEjemplo() {
   const e = EJ[LANG] || EJ.es;
   if (!S.esEjemplo) S.prev = {perfil: S.perfil, tipo: S.tipo, docs: S.docs, idea: S.idea, res: S.res};
-  S.perfil = {nombre: 'Asociación Diabetes Costa Blanca (' + t('ficticia') + ')', patologia: 'Diabetes', territorio: 'Alicante', mision: e.mision, tono: e.tono, evitar: e.evitar};
+  S.perfil = {nombre: 'Asociación Diabetes Costa Blanca (' + t('ficticia') + ')', ambito: 'Diabetes', territorio: 'Alicante', mision: e.mision, tono: e.tono, evitar: e.evitar};
   S.tipo = 'acta'; S.docs = [{id: 'ej1', nombre: 'notas-junta.txt', origen: 'texto', texto: e.notas}]; S.idea = e.actaT;
   S.res = procesa({titulo: e.actaT, asunto: '', texto: e.acta, hechos: e.af.map(([h, c]) => ({hecho: h, cita: c}))}, 'acta');
   S.esEjemplo = true;
@@ -1765,10 +1767,18 @@ function pintaPerfil() {
 }
 function perfilDe(o) {
   if (!o || typeof o !== 'object') return null;
-  const p = o.formato === PERFIL_FMT || o.formato === 'asociacia/1' ? o.perfil : o.perfil && o.perfil.nombre !== undefined ? o.perfil : o;
+  const p = o.formato === PERFIL_FMT_ANT || o.formato === 'asociacia/1' ? o.perfil : o.perfil && o.perfil.nombre !== undefined ? o.perfil : o;
   if (!p || typeof p !== 'object') return null;
-  const out = {}; PERFIL_CAMPOS.forEach(c => { if (p[c.k] != null) out[c.k] = String(p[c.k]); });
-  return Object.keys(out).length ? out : null;
+  const out = normalizaPerfil(p); return Object.keys(out).length ? out : null;
+}
+/* perfil con las claves comunes: acepta las antiguas de JuntIA (patologia, calendario «MM-DD | nombre») y listas como texto o como arreglo */
+function normalizaPerfil(p) {
+  p = p && typeof p === 'object' ? p : {};
+  const q = {...p, ambito: p.ambito ?? p.patologia, fechas: p.fechas ?? (p.calendario == null ? null : lineas(p.calendario).map(l => { const m = l.match(/^(\d{1,2})-(\d{1,2})\s*\|\s*(.*)$/); return m ? `${m[2].padStart(2, '0')}/${m[1].padStart(2, '0')} ${m[3]}` : l; }))};
+  const out = {};
+  PERFIL_CAMPOS.forEach(c => { const v = q[c.k]; if (v != null) out[c.k] = Array.isArray(v) ? v.map(x => String(x).trim()).filter(Boolean).join('\n') : String(v); });
+  PERFIL_OCULTOS.forEach(k => { if (typeof q[k] === 'string' && q[k]) out[k] = q[k]; });
+  return out;
 }
 $('filePerfil').onchange = async ev => {
   const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
@@ -1777,9 +1787,10 @@ $('filePerfil').onchange = async ev => {
   dejaEjemplo(); S.perfil = p; guarda(); pintaPerfil(); toast(t('Perfil cargado: {0}', p.nombre || '—'));
 };
 $('btnBajarPerfil').onclick = () => {
-  const p = {}; PERFIL_CAMPOS.forEach(c => { if (S.perfil[c.k]) p[c.k] = S.perfil[c.k]; });
+  const p = {}; PERFIL_CAMPOS.forEach(c => { if (S.perfil[c.k]) p[c.k] = ['fuentes', 'fechas'].includes(c.k) ? lineas(S.perfil[c.k]) : S.perfil[c.k]; });
+  PERFIL_OCULTOS.forEach(k => { if (S.perfil[k]) p[k] = S.perfil[k]; });
   if (!p.nombre) return toast(t('Escribe al menos el nombre de la asociación'));
-  dl('perfil-' + slug(p.nombre) + '.json', JSON.stringify({formato: PERFIL_FMT, version: 1, app: APP_NAME, fecha: hoyISO(), perfil: p}, null, 1), 'application/json');
+  dl('perfil-' + slug(p.nombre) + '.json', JSON.stringify({formato: PERFIL_FMT, version: 1, actualizado: hoyISO(), app: APP_NAME, ...p}, null, 1), 'application/json');
 };
 
 /* ── 2 · qué necesitas: tipo, documentos e idea ── */
@@ -1844,7 +1855,7 @@ $('envioSi').onclick = () => cierraEnvio(true); $('envioNo').onclick = () => cie
 /* ── el encargo y la comprobación ── */
 const perfilTexto = p => PERFIL_CAMPOS.map(c => p[c.k] || '').join('\n');
 function promptSistema(p) {
-  return `Eres la persona que se encarga de la comunicación interna de «${p.nombre || 'la asociación'}»${p.siglas ? ` (${p.siglas})` : ''}, una asociación de pacientes${p.patologia ? ` del ámbito de: ${p.patologia}` : ''}${p.territorio ? `, en ${p.territorio}` : ''}.
+  return `Eres la persona que se encarga de la comunicación interna de «${p.nombre || 'la asociación'}»${p.siglas ? ` (${p.siglas})` : ''}, una asociación de pacientes${p.ambito ? ` del ámbito de: ${p.ambito}` : ''}${p.territorio ? `, en ${p.territorio}` : ''}.
 Misión: ${p.mision || '(sin definir)'}
 Tono: ${p.tono || 'cercano, claro y positivo'}
 Destinatarios habituales: ${lineas(p.publicos).join('; ') || 'socios, voluntariado y junta directiva'}
@@ -1939,7 +1950,7 @@ function pintaResultado() {
 }
 
 /* ── arranque ── */
-(async () => { const p = await cargaEstado(); if (p) S = {...S, ...p}; iniciaUI(); if (S.esEjemplo) aplicaEjemplo(); go(0); })();
+(async () => { const p = await cargaEstado(); if (p) S = {...S, ...p}; S.perfil = normalizaPerfil(S.perfil); iniciaUI(); if (S.esEjemplo) aplicaEjemplo(); go(0); })();
 
 </script>
 </body></html>

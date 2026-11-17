@@ -10,7 +10,7 @@ La comunicación interna de tu asociación, sin esfuerzo. Aplicación web de un 
 
 Ayuda al voluntariado y al personal de las asociaciones de pacientes con su comunicación interna, en tres pasos:
 
-1. **Tu asociación.** Perfil breve (nombre, ámbito, misión, tono, expresiones que se evitan). Se descarga en un archivo `.json` (formato `propatiens-perfil/1`) y se sube en las demás apps del curso: DifundIA, SubvencIA y EncuestIA. También lee el expediente de AsociacIA.
+1. **Tu asociación.** Perfil breve (nombre, ámbito, misión, tono, expresiones que se evitan). Se descarga en un archivo `.json` con el formato común `perfil-asociacion-pacientes` (el mismo que DifundIA, SubvencIA y EncuestIA) y se sube en las demás apps del curso. Al descargarlo se conservan los campos que JuntIA no usa (web, redes, hashtags, eslogan, colores y logo). También lee los perfiles del formato anterior de JuntIA (`propatiens-perfil/1`) y el expediente de AsociacIA.
 2. **¿Qué necesitas?** Acta de una reunión, convocatoria, comunicado a socios o voluntariado, o boletín interno. Se suben los documentos que haya (Word, PDF, PowerPoint, texto, fotos de notas, grabaciones de audio) y se escribe la idea en una frase.
 3. **Revisa y envía.** El documento sale listo para editar, copiar, descargar en Word o abrir en el correo con el asunto puesto. Guarda en el navegador los últimos ocho documentos.
 
@@ -44,7 +44,7 @@ ORCID: Fernando Borrás Rocher [0000-0002-5519-4573](https://orcid.org/0000-0002
 
 ## Cómo citar
 
-Borrás Rocher, F. (2026). *JuntIA* (v1.0.0) [Software]. (DOI en trámite)
+Borrás Rocher, F. (2026). *JuntIA* (v1.1.0) [Software]. (DOI en trámite)
 
 ## Licencia
 
