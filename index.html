@@ -405,6 +405,10 @@ table{border-collapse:collapse;width:100%;font-size:13.8px}th{background:var(--p
 .ju-doc{display:inline-flex;align-items:center;gap:8px;background:#EEF5FC;border-radius:999px;padding:6px 8px 6px 12px;font-size:14px;max-width:100%}.ju-doc span{overflow-wrap:anywhere}
 .ju-doc .i{width:16px;height:16px;flex:none}.ju-doc button{border:0;background:transparent;cursor:pointer;color:var(--gris);display:grid;place-items:center;padding:4px;border-radius:50%}.ju-doc button:hover{background:#fff}
 .ju-hist{display:flex;flex-wrap:wrap;gap:8px}
+.ju-logo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 14px}.ju-logo img{max-height:64px;max-width:200px;border:1px solid var(--linea-2);border-radius:8px;padding:6px;background:#fff}
+.ju-colores{display:flex;gap:18px;flex-wrap:wrap}.ju-color input[type=color]{width:56px;height:38px;border:1.5px solid var(--linea);border-radius:8px;padding:2px;background:#fff;cursor:pointer;vertical-align:middle}.ju-color small{margin-left:8px}
+.ju-mail{position:relative}.ju-mail>summary{list-style:none}.ju-mail>summary::-webkit-details-marker{display:none}
+.ju-mail-menu{position:absolute;z-index:20;bottom:calc(100% + 8px);left:0;width:min(330px,86vw);background:#fff;border:1px solid var(--linea);border-radius:12px;box-shadow:0 10px 30px rgba(15,34,55,.18);padding:12px;display:grid;gap:6px}.ju-mail-menu .help{margin:0 0 4px}.ju-mail-menu .btn{justify-content:flex-start}
 .ju-mas{margin-top:10px}.ju-mas summary{cursor:pointer;font-weight:600;color:var(--acero);margin-bottom:10px}
 .ju-tit{font:700 24px var(--display);margin:4px 0 10px;overflow-wrap:anywhere}
 .ju-avisos{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}.ju-avisos li{padding:9px 12px;border-radius:10px;font-size:15px;background:#FFF8E6;border-left:4px solid #E9C46A;overflow-wrap:anywhere}.ju-avisos li.ok{background:var(--forjado-suave);border-color:var(--forjado)}.ju-avisos li.error{background:var(--brasa-suave);border-color:var(--brasa)}
@@ -506,6 +510,7 @@ table{border-collapse:collapse;width:100%;font-size:13.8px}th{background:var(--p
   <header class="sh" style="--c:#0F2237"><div class="sh-ico"><svg class="i"><use href="#i-user"/></svg></div><div><p class="sh-step" data-i18n="s.paso1">Paso 1 de 3</p><h2 data-i18n="Tu asociación">Tu asociación</h2><p class="sh-lede" data-i18n="s.perfil.lede">Solo la primera vez. Descarga el perfil y súbelo en las demás apps del curso para no repetirlo.</p></div></header>
   <div class="card ju-perfilbar"><div class="actions" style="margin:0"><label class="btn btn-ghost" for="filePerfil"><svg class="i"><use href="#i-upload"/></svg><span data-i18n="Subir perfil">Subir perfil</span></label><input type="file" id="filePerfil" accept=".json,application/json" hidden><button class="btn btn-ghost" id="btnBajarPerfil" type="button"><svg class="i"><use href="#i-download"/></svg><span data-i18n="Descargar perfil">Descargar perfil</span></button></div><p class="help" data-i18n="s.perfil.help">El perfil es un archivo .json. Sirve para JuntIA, DifundIA, SubvencIA y EncuestIA.</p></div>
   <div class="card" id="perfilForm"></div>
+  <div class="card" id="marcaForm"></div>
 </section>
 
 <!-- 2 · QUÉ NECESITAS -->
@@ -1329,35 +1334,68 @@ function wPara(tx, o = {}) {
   return `<w:p><w:pPr>${ppr}</w:pPr>${runs}</w:p>`;
 }
 /* tabla a partir de filas de celdas (la primera, cabecera en negrita) */
-function wTabla(filas) {
+function wTabla(filas, fill = 'EEF2F6') {   // fill: fondo de la fila de cabecera
   const nc = Math.max(...filas.map(f => f.length)), w = Math.floor(9000 / nc), bd = '<w:top w:val="single" w:sz="4" w:color="BFC9D4"/><w:left w:val="single" w:sz="4" w:color="BFC9D4"/><w:bottom w:val="single" w:sz="4" w:color="BFC9D4"/><w:right w:val="single" w:sz="4" w:color="BFC9D4"/><w:insideH w:val="single" w:sz="4" w:color="BFC9D4"/><w:insideV w:val="single" w:sz="4" w:color="BFC9D4"/>';
-  const fila = (f, cab) => '<w:tr>' + Array.from({length: nc}, (_, j) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${cab ? '<w:shd w:val="clear" w:color="auto" w:fill="EEF2F6"/>' : ''}</w:tcPr><w:p><w:pPr><w:spacing w:after="40"/></w:pPr>${wInline(f[j] ?? '', {s: 20, b: cab})}</w:p></w:tc>`).join('') + '</w:tr>';
+  const fila = (f, cab) => '<w:tr>' + Array.from({length: nc}, (_, j) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${cab ? `<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>` : ''}</w:tcPr><w:p><w:pPr><w:spacing w:after="40"/></w:pPr>${wInline(f[j] ?? '', {s: 20, b: cab})}</w:p></w:tc>`).join('') + '</w:tr>';
   return `<w:tbl><w:tblPr><w:tblW w:w="${w * nc}" w:type="dxa"/><w:tblBorders>${bd}</w:tblBorders><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${'<w:gridCol w:w="' + w + '"/>'.repeat(nc)}</w:tblGrid>${filas.map((f, k) => fila(f, k === 0)).join('')}</w:tbl><w:p><w:pPr><w:spacing w:after="60"/></w:pPr></w:p>`;
 }
-/* wordDeXml(cuerpoXml, {creador, titulo}) → Blob .docx   (para apps que montan su propio cuerpo con wPara/wTabla) */
-async function wordDeXml(cuerpo, {creador = '', titulo = ''} = {}) {
+/* wordDeXml(cuerpoXml, {creador, titulo, marca}) → Blob .docx   (para apps que montan su propio cuerpo con wPara/wTabla)
+   marca (opcional) = {tit: 'RRGGBB' color de títulos, linea: 'RRGGBB' color de filetes, nombre, linea2, pie, logo: {png: Uint8Array, w, h} | null}
+   → cabecera con logo y nombre en cada página y pie con «Página X de Y». */
+async function wordDeXml(cuerpo, {creador = '', titulo = '', marca = null} = {}) {
   const W = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
-  const hs = [[1, 32, '0F2237'], [2, 26, '0F2237'], [3, 23, '33475B']].map(([n, s, col]) => `<w:style w:type="paragraph" w:styleId="Heading${n}"><w:name w:val="heading ${n}"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:uiPriority w:val="9"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="${n === 1 ? 280 : 200}" w:after="100"/><w:outlineLvl w:val="${n - 1}"/></w:pPr><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:b/><w:color w:val="${col}"/><w:sz w:val="${s}"/><w:szCs w:val="${s}"/></w:rPr></w:style>`).join('');
+  const hs = [[1, 32, marca ? marca.tit : '0F2237'], [2, 26, marca ? marca.tit : '0F2237'], [3, 23, '33475B']].map(([n, s, col]) => `<w:style w:type="paragraph" w:styleId="Heading${n}"><w:name w:val="heading ${n}"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:uiPriority w:val="9"/><w:qFormat/><w:pPr><w:keepNext/><w:spacing w:before="${n === 1 ? 280 : 200}" w:after="100"/><w:outlineLvl w:val="${n - 1}"/></w:pPr><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:b/><w:color w:val="${col}"/><w:sz w:val="${s}"/><w:szCs w:val="${s}"/></w:rPr></w:style>`).join('');
   const lang = typeof LANG === 'string' ? ({es: 'es-ES', ca: 'ca-ES', eu: 'eu-ES', gl: 'gl-ES', en: 'en-GB', pt: 'pt-PT'}[LANG] || 'es-ES') : 'es-ES';
   const ahora = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
   return new Blob([await zipBytes({
-    '[Content_Types].xml': '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>',
+    '[Content_Types].xml': '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>' + (marca ? '<Default Extension="png" ContentType="image/png"/><Override PartName="/word/header1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>' : '') + '</Types>',
     '_rels/.rels': '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>',
     'docProps/core.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${_x(titulo)}</dc:title><dc:creator>${_x(creador)}</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">${ahora}</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">${ahora}</dcterms:modified></cp:coreProperties>`,
-    'word/_rels/document.xml.rels': '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>',
+    'word/_rels/document.xml.rels': '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' + (marca ? '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/header" Target="header1.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>' : '') + '</Relationships>',
     'word/styles.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles ${W}><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="${lang}"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="110" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>${hs}</w:styles>`,
-    'word/document.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${W}><w:body>${cuerpo}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1418" w:right="1418" w:bottom="1418" w:left="1418" w:header="709" w:footer="709" w:gutter="0"/></w:sectPr></w:body></w:document>`
+    'word/document.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${W}><w:body>${cuerpo}<w:sectPr>${marca ? '<w:headerReference w:type="default" r:id="rId2"/><w:footerReference w:type="default" r:id="rId3"/>' : ''}<w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1418" w:right="1418" w:bottom="1418" w:left="1418" w:header="709" w:footer="709" w:gutter="0"/></w:sectPr></w:body></w:document>`,
+    ...(marca ? _wMarca(marca, W) : {})
   })], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
-/* wordDeMarkdown(md, {titulo, subtitulo, pie, kicker}) → Blob .docx
+/* cabecera (logo a la izquierda, nombre a la derecha, filete de color) y pie (texto y «Página X de Y») para wordDeXml */
+function _wMarca(m, W) {
+  const NS = W + ' xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"';
+  const out = {}, sinBordes = '<w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>';
+  let img = '';
+  if (m.logo) {   // como mucho 5 × 1,5 cm, sin deformar (1 cm = 360000 EMU)
+    const k = Math.min(1800000 / m.logo.w, 540000 / m.logo.h), cx = Math.round(m.logo.w * k), cy = Math.round(m.logo.h * k);
+    img = `<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="1" name="Logo"/><wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="0" name="logo.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdLogo"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
+    out['word/media/logo.png'] = m.logo.png;
+    out['word/_rels/header1.xml.rels'] = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdLogo" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/logo.png"/></Relationships>';
+  }
+  const celda = (w, jc, xml) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr><w:spacing w:after="0"/><w:jc w:val="${jc}"/></w:pPr>${xml}</w:p></w:tc>`;
+  const textos = wRun({text: m.nombre, b: true, col: m.tit, s: 22}) + (m.linea2 ? '<w:r><w:br/></w:r>' + wRun({text: m.linea2, col: '5D7691', s: 17}) : '');
+  out['word/header1.xml'] = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:hdr ${NS}><w:tbl><w:tblPr><w:tblW w:w="9070" w:type="dxa"/>${sinBordes}<w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid><w:gridCol w:w="3400"/><w:gridCol w:w="5670"/></w:tblGrid><w:tr>${celda(3400, 'left', img)}${celda(5670, 'right', textos)}</w:tr></w:tbl><w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="12" w:space="1" w:color="${m.linea}"/></w:pBdr><w:spacing w:after="0"/></w:pPr></w:p></w:hdr>`;
+  const pg = t('Página {0} de {1}').split(/\{[01]\}/), gris = {col: '8899AA', s: 16}, campo = c => `<w:fldSimple w:instr=" ${c} ">${wRun({...gris, text: '1'})}</w:fldSimple>`;
+  out['word/footer1.xml'] = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr ${NS}><w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="6" w:space="6" w:color="${m.linea}"/></w:pBdr><w:tabs><w:tab w:val="right" w:pos="9070"/></w:tabs><w:spacing w:after="0"/></w:pPr>${wRun({...gris, text: m.pie || ''})}<w:r><w:tab/></w:r>${wRun({...gris, text: pg[0] || ''})}${campo('PAGE')}${wRun({...gris, text: pg[1] || ''})}${campo('NUMPAGES')}${wRun({...gris, text: pg[2] || ''})}</w:p></w:ftr>`;
+  return out;
+}
+/* colores y logo del perfil, listos para Word y correo. El color de títulos se oscurece si el principal es muy claro. */
+const _hex = c => /^#[0-9a-f]{6}$/i.test(c || '') ? c.slice(1).toUpperCase() : '';
+const _lum = h => { const [r, g, b] = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16) / 255); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const tinte = (h, f) => [0, 2, 4].map(i => Math.round(parseInt(h.slice(i, i + 2), 16) * (1 - f) + 255 * f).toString(16).padStart(2, '0')).join('').toUpperCase();
+function marcaDe(p) {
+  const c1 = _hex(p.color1) || _hex(COLOR_DEF[0]), c2 = _hex(p.color2) || _hex(COLOR_DEF[1]);
+  return {c1, c2, tit: _lum(c1) < 0.55 ? c1 : '0F2237', nombre: p.nombre || '', web: (p.web || '').replace(/^https?:\/\//, '').replace(/\/$/, ''), logo: p.logo || ''};
+}
+/* logo (data URL, también SVG) → PNG en bytes con sus medidas, para incrustarlo en el Word */
+function logoPng(url) {
+  return new Promise(ok => { if (!url) return ok(null); const im = new Image(); im.onload = () => { const w = im.naturalWidth || 300, h = im.naturalHeight || 150, c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(im, 0, 0, w, h); const b = atob(c.toDataURL('image/png').split(',')[1]); ok({png: Uint8Array.from(b, x => x.charCodeAt(0)), w, h}); }; im.onerror = () => ok(null); im.src = url; });
+}
+/* wordDeMarkdown(md, {titulo, subtitulo, pie, kicker, marca}) → Blob .docx   (marca: ver wordDeXml; colorea títulos y cabeceras de tabla)
    Convierte #/##/### encabezados, listas, tablas Markdown (| a | b |), **negritas**, *cursivas* y `código`. */
-async function wordDeMarkdown(md, {titulo = '', subtitulo = '', pie = '', kicker = ''} = {}) {
+async function wordDeMarkdown(md, {titulo = '', subtitulo = '', pie = '', kicker = '', marca = null} = {}) {
   const k = [];
-  if (kicker) k.push(wPara(String(kicker).toUpperCase(), {c: true, b: true, col: 'E4572E', s: 20, plain: true}));
-  if (titulo) k.push(wPara(titulo, {c: true, b: true, s: 32, plain: true}));
+  if (kicker) k.push(wPara(String(kicker).toUpperCase(), {c: true, b: true, col: marca ? marca.linea : 'E4572E', s: 20, plain: true}));
+  if (titulo) k.push(wPara(titulo, {c: true, b: true, s: 32, col: marca ? marca.tit : undefined, plain: true}));
   if (subtitulo) k.push(wPara(subtitulo, {c: true, col: '5D7691', s: 20, after: 260, plain: true}));
   const lineas = String(md ?? '').replace(/\r\n?/g, '\n').split('\n'); let tabla = [];
-  const cierraTabla = () => { if (tabla.length) { k.push(wTabla(tabla)); tabla = []; } };
+  const cierraTabla = () => { if (tabla.length) { k.push(wTabla(tabla, marca ? tinte(marca.linea, 0.85) : undefined)); tabla = []; } };
   for (const l of lineas) {
     const t = l.trimEnd(); let m;
     if (/^\s*\|.*\|\s*$/.test(t)) { if (!/^\s*\|[\s:|-]+\|\s*$/.test(t)) tabla.push(t.trim().slice(1, -1).split('|').map(c => c.trim())); continue; }
@@ -1371,7 +1409,7 @@ async function wordDeMarkdown(md, {titulo = '', subtitulo = '', pie = '', kicker
   cierraTabla();
   if (pie) k.push(wPara(pie, {i: true, s: 16, col: '8899AA', plain: true}));
   const app = typeof APP_NAME === 'string' ? APP_NAME : (typeof APP === 'string' ? APP : '');
-  return wordDeXml(k.join(''), {creador: app, titulo: titulo || app});
+  return wordDeXml(k.join(''), {creador: app, titulo: titulo || app, marca});
 }
 /* csv con BOM, separador «;» (Excel en español) y comillas escapadas */
 const csvq = v => { const s = String(v ?? ''); return /[";\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
@@ -1440,6 +1478,25 @@ const TR = {"IA":["IA","AA","IA","AI","IA"],
 "Escribe al menos el nombre de la asociación":["Escriu com a mínim el nom de l’associació","Idatzi gutxienez elkartearen izena","Escribe polo menos o nome da asociación","Enter at least the name of the association","Escreva pelo menos o nome da associação"],
 "{0} palabras":["{0} paraules","{0} hitz","{0} palabras","{0} words","{0} palavras"],
 "Quitar":["Treure","Kendu","Quitar","Remove","Retirar"],
+"por defecto":["per defecte", "lehenetsia", "por defecto", "default", "predefinido"],
+"Logo y colores":["Logotip i colors", "Logoa eta koloreak", "Logo e cores", "Logo and colours", "Logótipo e cores"],
+"Salen en la cabecera de los documentos Word y de los correos.":["Surten a la capçalera dels documents Word i dels correus.", "Word dokumentuen eta mezuen goiburuan agertzen dira.", "Saen na cabeceira dos documentos Word e dos correos.", "They appear in the header of Word documents and emails.", "Aparecem no cabeçalho dos documentos Word e dos e-mails."],
+"Sin logo":["Sense logotip", "Logorik gabe", "Sen logo", "No logo", "Sem logótipo"],
+"Cambiar":["Canviar", "Aldatu", "Cambiar", "Change", "Alterar"],
+"Subir logo":["Pujar el logotip", "Logoa igo", "Subir logo", "Upload logo", "Carregar logótipo"],
+"Color principal":["Color principal", "Kolore nagusia", "Cor principal", "Main colour", "Cor principal"],
+"Color secundario":["Color secundari", "Bigarren kolorea", "Cor secundaria", "Secondary colour", "Cor secundária"],
+"Web":["Web", "Webgunea", "Web", "Website", "Site"],
+"No se pudo leer el logo.":["No s’ha pogut llegir el logotip.", "Ezin izan da logoa irakurri.", "Non se puido ler o logo.", "The logo could not be read.", "Não foi possível ler o logótipo."],
+"Página {0} de {1}":["Pàgina {0} de {1}", "{0}. orria / {1}", "Páxina {0} de {1}", "Page {0} of {1}", "Página {0} de {1}"],
+"Se abre el correo con el asunto puesto y el texto con formato copiado: pégalo en el cuerpo (Ctrl+V o Cmd+V).":["S’obre el correu amb l’assumpte posat i el text amb format copiat: enganxa’l al cos (Ctrl+V o Cmd+V).", "Posta irekitzen da gaia jarrita eta testua formatuarekin kopiatuta: itsatsi gorputzean (Ctrl+V edo Cmd+V).", "Ábrese o correo co asunto posto e o texto con formato copiado: pégao no corpo (Ctrl+V ou Cmd+V).", "Your email opens with the subject filled in and the formatted text copied: paste it into the body (Ctrl+V or Cmd+V).", "O e-mail abre com o assunto preenchido e o texto formatado copiado: cole-o no corpo (Ctrl+V ou Cmd+V)."],
+"Solo copiar con formato":["Només copiar amb format", "Formatuarekin kopiatu soilik", "Só copiar con formato", "Copy with formatting only", "Apenas copiar com formatação"],
+"Correo con formato copiado: pégalo en el cuerpo del mensaje.":["Correu amb format copiat: enganxa’l al cos del missatge.", "Formatudun mezua kopiatuta: itsatsi mezuaren gorputzean.", "Correo con formato copiado: pégao no corpo da mensaxe.", "Formatted email copied: paste it into the message body.", "E-mail formatado copiado: cole-o no corpo da mensagem."],
+"No se pudo copiar con formato: va el texto sin formato.":["No s’ha pogut copiar amb format: va el text sense format.", "Ezin izan da formatuarekin kopiatu: formaturik gabeko testua doa.", "Non se puido copiar con formato: vai o texto sen formato.", "Could not copy with formatting: the plain text goes instead.", "Não foi possível copiar com formatação: segue o texto simples."],
+"Programa de correo del ordenador":["Programa de correu de l’ordinador", "Ordenagailuko posta-programa", "Programa de correo do ordenador", "Email app on this computer", "Programa de e-mail do computador"],
+"Gmail":["Gmail", "Gmail", "Gmail", "Gmail", "Gmail"],
+"Outlook.com / Hotmail":["Outlook.com / Hotmail", "Outlook.com / Hotmail", "Outlook.com / Hotmail", "Outlook.com / Hotmail", "Outlook.com / Hotmail"],
+"Outlook (Microsoft 365)":["Outlook (Microsoft 365)", "Outlook (Microsoft 365)", "Outlook (Microsoft 365)", "Outlook (Microsoft 365)", "Outlook (Microsoft 365)"],
 "Lo último que has preparado":["El darrer que has preparat","Prestatu duzun azkena","O último que preparaches","What you prepared most recently","O que preparou mais recentemente"],
 "Leyendo «{0}»…":["Llegint «{0}»…","«{0}» irakurtzen…","Lendo «{0}»…","Reading “{0}”…","A ler «{0}»…"],
 "La grabación «{0}» se enviará a tu proveedor de IA para transcribirla. El audio no se puede enmascarar. ¿Continuar?":["L’enregistrament «{0}» s’enviarà al teu proveïdor d’IA per transcriure’l. L’àudio no es pot emmascarar. Vols continuar?","«{0}» grabazioa zure AA hornitzaileari bidaliko zaio transkribatzeko. Audioa ezin da ezkutatu. Jarraitu?","A gravación «{0}» enviarase ao teu provedor de IA para transcribila. O audio non se pode enmascarar. Continuar?","The recording “{0}” will be sent to your AI provider to be transcribed. Audio cannot be masked. Continue?","A gravação «{0}» será enviada ao seu fornecedor de IA para ser transcrita. O áudio não pode ser mascarado. Continuar?"],
@@ -1527,10 +1584,11 @@ const I18N = (() => { const L5 = ['ca', 'eu', 'gl', 'en', 'pt'], o = {ca: {}, eu
 
 /* ══ Datos de JuntIA: tipos de documento, campos del perfil y ejemplo. L('…') marca textos de interfaz (se traducen al pintar). ══ */
 const L = s => s;
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const PERFIL_FMT = 'perfil-asociacion-pacientes';   // formato común del perfil en las apps del curso (el mismo que DifundIA, SubvencIA y EncuestIA)
 const PERFIL_FMT_ANT = 'propatiens-perfil/1';        // formato anterior de JuntIA: se sigue leyendo (y también el expediente de AsociacIA)
-const PERFIL_OCULTOS = ['web', 'redes', 'hashtags', 'eslogan', 'color1', 'color2', 'logo'];   // campos comunes que JuntIA no usa: se conservan para devolverlos al descargar
+const PERFIL_OCULTOS = ['web', 'redes', 'hashtags', 'eslogan', 'color1', 'color2', 'logo'];   // campos comunes que no van al formulario de texto: se conservan para devolverlos al descargar (logo, colores y web se usan en el Word y el correo)
+const COLOR_DEF = ['#1F6FB2', '#F2A541'];           // los mismos que DifundIA
 /* campos del perfil: los cinco primeros se ven siempre; el resto, en «Más datos» */
 const PERFIL_CAMPOS = [
   {k: 'nombre', l: L('Nombre de la asociación'), req: true},
@@ -1764,6 +1822,23 @@ function pintaPerfil() {
   $('perfilForm').innerHTML = PERFIL_CAMPOS.filter(c => !c.mas).map(campo).join('')
     + `<details class="ju-mas"${PERFIL_CAMPOS.some(c => c.mas && S.perfil[c.k]) ? ' open' : ''}><summary>${esc(t('Más datos (opcional)'))}</summary>${PERFIL_CAMPOS.filter(c => c.mas).map(campo).join('')}</details>`;
   $$('[data-p]').forEach(el => { el.value = S.perfil[el.dataset.p] || ''; el.addEventListener('input', () => { dejaEjemplo(); S.perfil[el.dataset.p] = el.value; guarda(); }); });
+  pintaMarca();
+}
+/* logo y colores: salen en la cabecera del Word y del correo (mismos campos que DifundIA) */
+function pintaMarca() {
+  const p = S.perfil, col = (k, i, lab) => `<div class="field ju-color"><label for="p_${k}">${esc(t(lab))}</label><input type="color" id="p_${k}" value="${esc(p[k] || COLOR_DEF[i])}"><small class="muted">${p[k] ? esc(p[k].toUpperCase()) : esc(t('por defecto'))}</small></div>`;
+  $('marcaForm').innerHTML = `<h3>${esc(t('Logo y colores'))}</h3><p class="help">${esc(t('Salen en la cabecera de los documentos Word y de los correos.'))}</p>
+    <div class="ju-logo">${p.logo ? `<img src="${p.logo}" alt="">` : `<span class="muted">${esc(t('Sin logo'))}</span>`}<label class="btn btn-ghost btn-sm" for="fileLogo">${ico('upload')}<span>${esc(t(p.logo ? 'Cambiar' : 'Subir logo'))}</span></label>${p.logo ? `<button class="btn btn-ghost btn-sm" type="button" id="btnLogoX">${esc(t('Quitar'))}</button>` : ''}<input type="file" id="fileLogo" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden></div>
+    <div class="ju-colores">${col('color1', 0, 'Color principal')}${col('color2', 1, 'Color secundario')}</div>
+    <div class="field"><label for="p_web">${esc(t('Web'))}</label><input type="text" id="p_web" value="${esc(p.web || '')}" placeholder="https://"></div>`;
+  ['color1', 'color2'].forEach(k => $('p_' + k).oninput = e => { dejaEjemplo(); p[k] = e.target.value; e.target.nextElementSibling.textContent = p[k].toUpperCase(); guarda(); });
+  $('p_web').oninput = e => { dejaEjemplo(); p.web = e.target.value.trim(); guarda(); };
+  $('fileLogo').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const logo = await logoDe(f); dejaEjemplo(); S.perfil.logo = logo; guarda(); pintaMarca(); } catch (er) { toast(er.message, 6000); } };
+  if ($('btnLogoX')) $('btnLogoX').onclick = () => { delete S.perfil.logo; guarda(); pintaMarca(); };
+}
+/* el logo se reduce a 600 px y se guarda como PNG con transparencia (igual que en DifundIA) */
+function logoDe(file) {
+  return new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => { const k = Math.min(1, 600 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.max(1, Math.round(im.width * k)); c.height = Math.max(1, Math.round(im.height * k)); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL('image/png')); }; im.onerror = () => ko(new Error(t('No se pudo leer el logo.'))); im.src = r.result; }; r.readAsDataURL(file); });
 }
 function perfilDe(o) {
   if (!o || typeof o !== 'object') return null;
@@ -1778,6 +1853,8 @@ function normalizaPerfil(p) {
   const out = {};
   PERFIL_CAMPOS.forEach(c => { const v = q[c.k]; if (v != null) out[c.k] = Array.isArray(v) ? v.map(x => String(x).trim()).filter(Boolean).join('\n') : String(v); });
   PERFIL_OCULTOS.forEach(k => { if (typeof q[k] === 'string' && q[k]) out[k] = q[k]; });
+  ['color1', 'color2'].forEach(k => { if (out[k] && !/^#[0-9a-f]{6}$/i.test(out[k])) delete out[k]; });
+  if (out.logo && !/^data:image\/(png|jpeg|webp|svg\+xml)[;,]/.test(out.logo)) delete out.logo;
   return out;
 }
 $('filePerfil').onchange = async ev => {
@@ -1926,10 +2003,45 @@ function avisosDe(r) {
   if (r.av.evitar.length) o.push(['aviso', t('Expresiones que la asociación evita: {0}', r.av.evitar.join(', '))]);
   return o;
 }
+/* ── correo: no hay servidor. Se abre el webmail (o el programa de correo) con el asunto y se copia el cuerpo con formato ── */
+const CORREOS = [['gmail', 'Gmail'], ['outlook', 'Outlook.com / Hotmail'], ['m365', 'Outlook (Microsoft 365)'], ['mailto', 'Programa de correo del ordenador']];
+function urlCorreo(id, asunto, cuerpo) {
+  const su = encodeURIComponent(asunto), bo = encodeURIComponent(String(cuerpo).slice(0, id === 'mailto' ? 1800 : 6000));
+  return {gmail: `https://mail.google.com/mail/?view=cm&fs=1&su=${su}&body=${bo}`,
+    outlook: `https://outlook.live.com/mail/0/deeplink/compose?subject=${su}&body=${bo}`,
+    m365: `https://outlook.office.com/mail/deeplink/compose?subject=${su}&body=${bo}`,
+    mailto: `mailto:?subject=${su}&body=${bo}`}[id];
+}
+/* el correo en HTML con estilos en línea (lo que aceptan Gmail y Outlook al pegar): franja de color, logo y nombre, documento y pie */
+function htmlCorreo(r) {
+  const m = marcaDe(S.perfil), c1 = '#' + m.c1, tit = '#' + m.tit, f = 'font-family:Arial,Helvetica,sans-serif;';
+  const d = document.createElement('div'); d.innerHTML = md(r.texto);
+  const st = {h4: `${f}color:${tit};font-size:18px;font-weight:bold;margin:22px 0 8px`, p: `${f}color:#1F2A37;font-size:15px;line-height:1.6;margin:0 0 12px`, ul: 'margin:0 0 12px;padding-left:22px', ol: 'margin:0 0 12px;padding-left:22px', li: `${f}color:#1F2A37;font-size:15px;line-height:1.6;margin:0 0 4px`, b: `color:${tit}`, code: 'font-family:Consolas,monospace;background:#F1F4F8;padding:1px 4px'};
+  d.querySelectorAll('*').forEach(el => { const s = st[el.tagName.toLowerCase()]; if (s) el.setAttribute('style', s); });
+  const cab = `${m.logo ? `<img src="${m.logo}" alt="${esc(m.nombre)}" height="56" style="height:56px;max-width:200px;display:block">` : ''}${m.nombre ? `<div style="${f}color:${tit};font-size:16px;font-weight:bold;margin-top:${m.logo ? 8 : 0}px">${esc(m.nombre)}</div>` : ''}`;
+  const pie = [m.nombre, m.web, S.perfil.territorio].filter(Boolean).map(esc).join(' · ');
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F5F8;padding:20px 0"><tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid #E3E8EF">
+<tr><td style="background:${c1};height:6px;line-height:6px;font-size:0">&nbsp;</td></tr>
+${cab ? `<tr><td style="padding:20px 28px 14px;border-bottom:2px solid #${tinte(m.c1, 0.75)}">${cab}</td></tr>` : ''}
+<tr><td style="padding:22px 28px 10px"><div style="${f}color:#${m.c2 && _lum(m.c2) < 0.6 ? m.c2 : '5D7691'};font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase">${esc(t(tipoDe(r.tipo).n))}</div><h1 style="${f}color:${tit};font-size:24px;line-height:1.25;margin:6px 0 16px">${esc(r.titulo)}</h1>${d.innerHTML}</td></tr>
+<tr><td style="padding:16px 28px 20px;background:#F8FAFC;border-top:1px solid #E3E8EF"><p style="${f}color:#5D7691;font-size:12px;line-height:1.5;margin:0">${pie ? pie + '<br>' : ''}<i>${esc(t('Preparado con ayuda de IA ({0}) y revisado por la asociación.', APP_NAME))}</i></p></td></tr>
+</table></td></tr></table>`;
+}
+/* copia síncrona (dentro del clic) con texto HTML y texto plano: funciona antes de abrir la pestaña del correo */
+function copiaCorreo(r) {
+  const html = htmlCorreo(r), txt = textoPlano(r.texto); let hecho = false;
+  const h = e => { e.clipboardData.setData('text/html', html); e.clipboardData.setData('text/plain', txt); e.preventDefault(); hecho = true; };
+  const sp = document.createElement('span'); sp.textContent = ' '; sp.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(sp);   // Safari solo lanza «copy» si hay algo seleccionado
+  const sel = getSelection(), rg = document.createRange(); rg.selectNodeContents(sp); sel.removeAllRanges(); sel.addRange(rg);
+  document.addEventListener('copy', h);
+  try { document.execCommand('copy'); } catch {} finally { document.removeEventListener('copy', h); sel.removeAllRanges(); sp.remove(); }
+  return hecho;
+}
 function pintaResultado() {
   const r = S.res;
   if (!r) { $('res').innerHTML = `<p class="empty">${esc(t('Aún no hay nada preparado. Ve al paso anterior y pulsa «Hacerlo».'))}</p>`; return; }
-  const av = avisosDe(r), mail = `mailto:?subject=${encodeURIComponent(r.asunto || r.titulo)}&body=${encodeURIComponent(textoPlano(r.texto).slice(0, 1800))}`;
+  const av = avisosDe(r);
   $('res').innerHTML = `${S.esEjemplo ? `<div class="ju-ej">${esc(t('Ejemplo con una asociación ficticia. Fíjate en el aviso: un acuerdo no aparece en las notas.'))} <button class="btn btn-ghost btn-sm" type="button" id="btnSalirEj">${esc(t('Salir del ejemplo'))}</button></div>` : ''}
     <p class="help">${esc(t(tipoDe(r.tipo).n))}${S.perfil.nombre ? ' · ' + esc(S.perfil.nombre) : ''}</p><h3 class="ju-tit">${esc(r.titulo)}</h3>
     ${r.asunto ? `<p><b>${esc(t('Asunto:'))}</b> ${esc(r.asunto)}</p>` : ''}
@@ -1937,7 +2049,7 @@ function pintaResultado() {
     <div class="ju-doc-res" id="resDoc">${md(r.texto)}</div>
     <textarea id="resEdit" rows="16" hidden aria-label="${esc(t('Editar'))}">${esc(r.texto)}</textarea>
     ${r.hechos.length ? `<details class="ju-det"${r.hechos.some(h => !h.ok) ? ' open' : ''}><summary>${esc(t('De dónde sale cada dato'))}</summary><ul class="fa-ul">${r.hechos.map(h => `<li>${h.ok ? '✓' : '⚠'} <b>${esc(h.h)}</b><br><small class="muted">${h.ok ? '«' + esc(h.cita) + '»' : esc(t('No aparece en tus documentos ni en tu idea: compruébalo o quítalo.'))}</small></li>`).join('')}</ul></details>` : ''}
-    <div class="actions"><button class="btn btn-ghost" id="btnEditar" type="button">${ico('pencil')}<span>${esc(t('Editar'))}</span></button><button class="btn btn-ghost" id="btnCopiar" type="button">${ico('copy')}<span>${esc(t('Copiar'))}</span></button><button class="btn btn-word" id="btnWord" type="button">${ico('doc')}<span>Word</span></button><a class="btn btn-ghost" id="btnMail" href="${mail}">${ico('chat')}<span>${esc(t('Enviar por correo'))}</span></a><button class="btn btn-primary" id="btnOtro" type="button">${ico('plus')}<span>${esc(t('Hacer otro'))}</span></button></div>`;
+    <div class="actions"><button class="btn btn-ghost" id="btnEditar" type="button">${ico('pencil')}<span>${esc(t('Editar'))}</span></button><button class="btn btn-ghost" id="btnCopiar" type="button">${ico('copy')}<span>${esc(t('Copiar'))}</span></button><button class="btn btn-word" id="btnWord" type="button">${ico('doc')}<span>Word</span></button><details class="ju-mail"><summary class="btn btn-ghost">${ico('chat')}<span>${esc(t('Enviar por correo'))}</span></summary><div class="ju-mail-menu"><p class="help">${esc(t('Se abre el correo con el asunto puesto y el texto con formato copiado: pégalo en el cuerpo (Ctrl+V o Cmd+V).'))}</p>${CORREOS.map(([id, n]) => `<a class="btn btn-ghost btn-sm" data-correo="${id}" href="#" target="_blank" rel="noopener">${esc(t(n))}</a>`).join('')}<button class="btn btn-ghost btn-sm" type="button" id="btnCopiarCorreo">${ico('copy')}<span>${esc(t('Solo copiar con formato'))}</span></button></div></details><button class="btn btn-primary" id="btnOtro" type="button">${ico('plus')}<span>${esc(t('Hacer otro'))}</span></button></div>`;
   if ($('btnSalirEj')) $('btnSalirEj').onclick = () => { saleEjemplo(); go(0); };
   $('btnEditar').onclick = () => {
     const ed = $('resEdit');
@@ -1945,7 +2057,21 @@ function pintaResultado() {
     r.texto = ed.value; r.av = revisa(r.texto + '\n' + r.asunto, [S.idea, ...S.docs.map(d => d.texto)].join('\n')); guarda(); pintaResultado(); toast(t('Cambios guardados'));
   };
   $('btnCopiar').onclick = async () => { try { await navigator.clipboard.writeText((r.asunto ? r.asunto + '\n\n' : '') + textoPlano(r.texto)); toast(t('Copiado')); } catch { toast(t('No se pudo copiar')); } };
-  $('btnWord').onclick = async () => { try { dl(slug(r.titulo) + '.docx', await wordDeMarkdown(r.texto, {titulo: r.titulo, subtitulo: [S.perfil.nombre, new Date(r.fecha).toLocaleDateString(locale())].filter(Boolean).join(' · '), pie: t('Preparado con ayuda de IA ({0}) y revisado por la asociación.', APP_NAME)})); } catch (e) { toast(e.message, 7000); } };
+  $('btnWord').onclick = async () => {
+    try {
+      const m = marcaDe(S.perfil), fecha = new Date(r.fecha).toLocaleDateString(locale()), conMarca = !!(m.nombre || m.logo);
+      const marca = conMarca ? {tit: m.tit, linea: m.c1, nombre: m.nombre, linea2: [S.perfil.territorio, m.web].filter(Boolean).join(' · '), pie: r.titulo, logo: await logoPng(m.logo)} : null;
+      dl(slug(r.titulo) + '.docx', await wordDeMarkdown(r.texto, {titulo: r.titulo, kicker: conMarca ? t(tipoDe(r.tipo).n) : '', subtitulo: conMarca ? fecha : [S.perfil.nombre, fecha].filter(Boolean).join(' · '), pie: t('Preparado con ayuda de IA ({0}) y revisado por la asociación.', APP_NAME), marca}));
+    } catch (e) { toast(e.message, 7000); }
+  };
+  /* correo: al pulsar, se copia el correo con formato (HTML) y se abre el webmail con el asunto; si no se pudo copiar, va el texto plano en el cuerpo */
+  $$('[data-correo]').forEach(a => a.onclick = ev => {
+    const ok = copiaCorreo(r), id = a.dataset.correo;
+    a.href = urlCorreo(id, r.asunto || r.titulo, ok ? '' : textoPlano(r.texto));
+    if (id === 'mailto') { ev.preventDefault(); location.href = a.href; }
+    toast(ok ? t('Correo con formato copiado: pégalo en el cuerpo del mensaje.') : t('No se pudo copiar con formato: va el texto sin formato.'), 7000);
+  });
+  $('btnCopiarCorreo').onclick = () => toast(copiaCorreo(r) ? t('Correo con formato copiado: pégalo en el cuerpo del mensaje.') : t('No se pudo copiar'), 6000);
   $('btnOtro').onclick = () => { if (S.esEjemplo) saleEjemplo(); S.docs = []; S.idea = ''; guarda(); go(2); };
 }
 
