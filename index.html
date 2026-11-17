@@ -405,6 +405,7 @@ table{border-collapse:collapse;width:100%;font-size:13.8px}th{background:var(--p
 .ju-doc{display:inline-flex;align-items:center;gap:8px;background:#EEF5FC;border-radius:999px;padding:6px 8px 6px 12px;font-size:14px;max-width:100%}.ju-doc span{overflow-wrap:anywhere}
 .ju-doc .i{width:16px;height:16px;flex:none}.ju-doc button{border:0;background:transparent;cursor:pointer;color:var(--gris);display:grid;place-items:center;padding:4px;border-radius:50%}.ju-doc button:hover{background:#fff}
 .ju-hist{display:flex;flex-wrap:wrap;gap:8px}
+.ju-hist-it{display:inline-flex;align-items:center}.ju-hist-it .btn{border-top-right-radius:0;border-bottom-right-radius:0}.ju-hist-x{align-self:stretch;border:1.5px solid var(--linea);border-left:0;border-radius:0 10px 10px 0;background:#fff;color:var(--gris);cursor:pointer;display:grid;place-items:center;padding:0 9px}.ju-hist-x:hover{background:var(--brasa-suave);color:var(--brasa-osc)}.ju-hist-x .i{width:15px;height:15px}.ju-hist-todo{margin-top:10px}
 .ju-logo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 14px}.ju-logo img{max-height:64px;max-width:200px;border:1px solid var(--linea-2);border-radius:8px;padding:6px;background:#fff}
 .ju-colores{display:flex;gap:18px;flex-wrap:wrap}.ju-color input[type=color]{width:56px;height:38px;border:1.5px solid var(--linea);border-radius:8px;padding:2px;background:#fff;cursor:pointer;vertical-align:middle}.ju-color small{margin-left:8px}
 .ju-mail{position:relative}.ju-mail>summary{list-style:none}.ju-mail>summary::-webkit-details-marker{display:none}
@@ -1498,6 +1499,10 @@ const TR = {"IA":["IA","AA","IA","AI","IA"],
 "Gmail":["Gmail", "Gmail", "Gmail", "Gmail", "Gmail"],
 "Outlook.com / Hotmail":["Outlook.com / Hotmail", "Outlook.com / Hotmail", "Outlook.com / Hotmail", "Outlook.com / Hotmail", "Outlook.com / Hotmail"],
 "Outlook (Microsoft 365)":["Outlook (Microsoft 365)", "Outlook (Microsoft 365)", "Outlook (Microsoft 365)", "Outlook (Microsoft 365)", "Outlook (Microsoft 365)"],
+"Borrar":["Esborrar", "Ezabatu", "Borrar", "Delete", "Apagar"],
+"Borrar todo":["Esborrar-ho tot", "Dena ezabatu", "Borrar todo", "Delete all", "Apagar tudo"],
+"Borrado: {0}":["Esborrat: {0}", "Ezabatuta: {0}", "Borrado: {0}", "Deleted: {0}", "Apagado: {0}"],
+"¿Borrar todo lo preparado? No se puede deshacer.":["Vols esborrar tot el que has preparat? No es pot desfer.", "Prestatutako guztia ezabatu? Ezin da desegin.", "Borrar todo o preparado? Non se pode desfacer.", "Delete everything you prepared? This cannot be undone.", "Apagar tudo o que preparou? Não é possível anular."],
 "Lo último que has preparado":["El darrer que has preparat","Prestatu duzun azkena","O último que preparaches","What you prepared most recently","O que preparou mais recentemente"],
 "Leyendo «{0}»…":["Llegint «{0}»…","«{0}» irakurtzen…","Lendo «{0}»…","Reading “{0}”…","A ler «{0}»…"],
 "La grabación «{0}» se enviará a tu proveedor de IA para transcribirla. El audio no se puede enmascarar. ¿Continuar?":["L’enregistrament «{0}» s’enviarà al teu proveïdor d’IA per transcriure’l. L’àudio no es pot emmascarar. Vols continuar?","«{0}» grabazioa zure AA hornitzaileari bidaliko zaio transkribatzeko. Audioa ezin da ezkutatu. Jarraitu?","A gravación «{0}» enviarase ao teu provedor de IA para transcribila. O audio non se pode enmascarar. Continuar?","The recording “{0}” will be sent to your AI provider to be transcribed. Audio cannot be masked. Continue?","A gravação «{0}» será enviada ao seu fornecedor de IA para ser transcrita. O áudio não pode ser mascarado. Continuar?"],
@@ -1883,8 +1888,12 @@ function pintaDocs() {
   $$('[data-quita]').forEach(b => b.onclick = () => { dejaEjemplo(); S.docs = S.docs.filter(d => d.id !== b.dataset.quita); guarda(); pintaDocs(); });
 }
 function pintaHist() {
-  $('historial').innerHTML = S.hist.length ? `<h3>${esc(t('Lo último que has preparado'))}</h3><div class="ju-hist">${S.hist.map((h, i) => `<button type="button" class="btn btn-ghost btn-sm" data-hist="${i}">${esc(h.titulo)} · ${esc(new Date(h.fecha).toLocaleDateString(locale()))}</button>`).join('')}</div>` : '';
+  $('historial').innerHTML = S.hist.length ? `<h3>${esc(t('Lo último que has preparado'))}</h3><div class="ju-hist">${S.hist.map((h, i) => `<span class="ju-hist-it"><button type="button" class="btn btn-ghost btn-sm" data-hist="${i}">${esc(h.titulo)} · ${esc(new Date(h.fecha).toLocaleDateString(locale()))}</button><button type="button" class="ju-hist-x" data-borra="${i}" aria-label="${esc(t('Borrar'))}" title="${esc(t('Borrar'))}">${ico('x')}</button></span>`).join('')}</div><button type="button" class="btn btn-ghost btn-sm ju-hist-todo" id="btnBorraHist">${ico('trash')}<span>${esc(t('Borrar todo'))}</span></button>` : '';
   $$('[data-hist]').forEach(b => b.onclick = () => { S.res = S.hist[+b.dataset.hist]; guarda(); go(3); });
+  /* borrar: si lo borrado es lo que está abierto en el paso 3, también se quita de ahí */
+  const quitaRes = hs => { if (S.res && hs.some(h => h.fecha === S.res.fecha)) S.res = null; };
+  $$('[data-borra]').forEach(b => b.onclick = () => { const h = S.hist[+b.dataset.borra]; quitaRes([h]); S.hist = S.hist.filter(x => x !== h); guarda(); pintaHist(); toast(t('Borrado: {0}', h.titulo)); });
+  if ($('btnBorraHist')) $('btnBorraHist').onclick = () => { if (!confirm(t('¿Borrar todo lo preparado? No se puede deshacer.'))) return; quitaRes(S.hist); S.hist = []; guarda(); pintaHist(); };
   $('historial').hidden = !S.hist.length;
 }
 function pintaTarea() { pintaTipos(); pintaDocs(); pintaHist(); $('idea').value = S.idea; $('estado').textContent = ''; }
