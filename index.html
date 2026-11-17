@@ -1381,7 +1381,7 @@ const _lum = h => { const [r, g, b] = [0, 2, 4].map(i => parseInt(h.slice(i, i +
 const tinte = (h, f) => [0, 2, 4].map(i => Math.round(parseInt(h.slice(i, i + 2), 16) * (1 - f) + 255 * f).toString(16).padStart(2, '0')).join('').toUpperCase();
 function marcaDe(p) {
   const c1 = _hex(p.color1) || _hex(COLOR_DEF[0]), c2 = _hex(p.color2) || _hex(COLOR_DEF[1]);
-  return {c1, c2, tit: _lum(c1) < 0.55 ? c1 : '0F2237', nombre: p.nombre || '', web: (p.web || '').replace(/^https?:\/\//, '').replace(/\/$/, ''), logo: p.logo || ''};
+  return {c1, c2, tit: _lum(c1) < 0.55 ? c1 : '0F2237', nombre: p.nombre || '', web: (p.web || '').replace(/^https?:\/\//, '').replace(/\/$/, ''), email: p.email || '', logo: p.logo || ''};
 }
 /* logo (data URL, también SVG) → PNG en bytes con sus medidas, para incrustarlo en el Word */
 function logoPng(url) {
@@ -1487,6 +1487,7 @@ const TR = {"IA":["IA","AA","IA","AI","IA"],
 "Color principal":["Color principal", "Kolore nagusia", "Cor principal", "Main colour", "Cor principal"],
 "Color secundario":["Color secundari", "Bigarren kolorea", "Cor secundaria", "Secondary colour", "Cor secundária"],
 "Web":["Web", "Webgunea", "Web", "Website", "Site"],
+"Correo de la asociación":["Correu de l’associació", "Elkartearen helbide elektronikoa", "Correo da asociación", "Association email", "E-mail da associação"],
 "No se pudo leer el logo.":["No s’ha pogut llegir el logotip.", "Ezin izan da logoa irakurri.", "Non se puido ler o logo.", "The logo could not be read.", "Não foi possível ler o logótipo."],
 "Página {0} de {1}":["Pàgina {0} de {1}", "{0}. orria / {1}", "Páxina {0} de {1}", "Page {0} of {1}", "Página {0} de {1}"],
 "Se abre el correo con el asunto puesto y el texto con formato copiado: pégalo en el cuerpo (Ctrl+V o Cmd+V).":["S’obre el correu amb l’assumpte posat i el text amb format copiat: enganxa’l al cos (Ctrl+V o Cmd+V).", "Posta irekitzen da gaia jarrita eta testua formatuarekin kopiatuta: itsatsi gorputzean (Ctrl+V edo Cmd+V).", "Ábrese o correo co asunto posto e o texto con formato copiado: pégao no corpo (Ctrl+V ou Cmd+V).", "Your email opens with the subject filled in and the formatted text copied: paste it into the body (Ctrl+V or Cmd+V).", "O e-mail abre com o assunto preenchido e o texto formatado copiado: cole-o no corpo (Ctrl+V ou Cmd+V)."],
@@ -1528,7 +1529,6 @@ const TR = {"IA":["IA","AA","IA","AI","IA"],
 "Cambios guardados":["Canvis desats","Aldaketak gordeta","Cambios gardados","Changes saved","Alterações guardadas"],
 "Copiado":["Copiat","Kopiatuta","Copiado","Copied","Copiado"],
 "No se pudo copiar":["No s’ha pogut copiar","Ezin izan da kopiatu","Non se puido copiar","Could not copy","Não foi possível copiar"],
-"Preparado con ayuda de IA ({0}) y revisado por la asociación.":["Preparat amb ajuda d’IA ({0}) i revisat per l’associació.","AAren laguntzaz prestatua ({0}) eta elkarteak berrikusia.","Preparado con axuda de IA ({0}) e revisado pola asociación.","Prepared with AI assistance ({0}) and reviewed by the association.","Preparado com ajuda de IA ({0}) e revisto pela associação."],
 "…":["…","…","…","…","…"],
 "Nombre de la asociación":["Nom de l’associació","Elkartearen izena","Nome da asociación","Name of the association","Nome da associação"],
 "Enfermedad o condición":["Malaltia o condició","Gaixotasuna edo egoera","Enfermidade ou condición","Disease or condition","Doença ou condição"],
@@ -1587,7 +1587,7 @@ const L = s => s;
 const VERSION = '1.2.0';
 const PERFIL_FMT = 'perfil-asociacion-pacientes';   // formato común del perfil en las apps del curso (el mismo que DifundIA, SubvencIA y EncuestIA)
 const PERFIL_FMT_ANT = 'propatiens-perfil/1';        // formato anterior de JuntIA: se sigue leyendo (y también el expediente de AsociacIA)
-const PERFIL_OCULTOS = ['web', 'redes', 'hashtags', 'eslogan', 'color1', 'color2', 'logo'];   // campos comunes que no van al formulario de texto: se conservan para devolverlos al descargar (logo, colores y web se usan en el Word y el correo)
+const PERFIL_OCULTOS = ['web', 'email', 'redes', 'hashtags', 'eslogan', 'color1', 'color2', 'logo'];   // campos comunes que no van al formulario de texto: se conservan para devolverlos al descargar (logo, colores, web y correo se usan en el Word y el correo)
 const COLOR_DEF = ['#1F6FB2', '#F2A541'];           // los mismos que DifundIA
 /* campos del perfil: los cinco primeros se ven siempre; el resto, en «Más datos» */
 const PERFIL_CAMPOS = [
@@ -1830,9 +1830,10 @@ function pintaMarca() {
   $('marcaForm').innerHTML = `<h3>${esc(t('Logo y colores'))}</h3><p class="help">${esc(t('Salen en la cabecera de los documentos Word y de los correos.'))}</p>
     <div class="ju-logo">${p.logo ? `<img src="${p.logo}" alt="">` : `<span class="muted">${esc(t('Sin logo'))}</span>`}<label class="btn btn-ghost btn-sm" for="fileLogo">${ico('upload')}<span>${esc(t(p.logo ? 'Cambiar' : 'Subir logo'))}</span></label>${p.logo ? `<button class="btn btn-ghost btn-sm" type="button" id="btnLogoX">${esc(t('Quitar'))}</button>` : ''}<input type="file" id="fileLogo" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden></div>
     <div class="ju-colores">${col('color1', 0, 'Color principal')}${col('color2', 1, 'Color secundario')}</div>
-    <div class="field"><label for="p_web">${esc(t('Web'))}</label><input type="text" id="p_web" value="${esc(p.web || '')}" placeholder="https://"></div>`;
+    <div class="field"><label for="p_web">${esc(t('Web'))}</label><input type="text" id="p_web" value="${esc(p.web || '')}" placeholder="https://"></div>
+    <div class="field"><label for="p_email">${esc(t('Correo de la asociación'))}</label><input type="text" inputmode="email" autocomplete="email" id="p_email" value="${esc(p.email || '')}" placeholder="info@…"></div>`;
   ['color1', 'color2'].forEach(k => $('p_' + k).oninput = e => { dejaEjemplo(); p[k] = e.target.value; e.target.nextElementSibling.textContent = p[k].toUpperCase(); guarda(); });
-  $('p_web').oninput = e => { dejaEjemplo(); p.web = e.target.value.trim(); guarda(); };
+  ['web', 'email'].forEach(k => $('p_' + k).oninput = e => { dejaEjemplo(); p[k] = e.target.value.trim(); guarda(); });
   $('fileLogo').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const logo = await logoDe(f); dejaEjemplo(); S.perfil.logo = logo; guarda(); pintaMarca(); } catch (er) { toast(er.message, 6000); } };
   if ($('btnLogoX')) $('btnLogoX').onclick = () => { delete S.perfil.logo; guarda(); pintaMarca(); };
 }
@@ -2019,7 +2020,7 @@ function htmlCorreo(r) {
   const st = {h4: `${f}color:${tit};font-size:18px;font-weight:bold;margin:22px 0 8px`, p: `${f}color:#1F2A37;font-size:15px;line-height:1.6;margin:0 0 12px`, ul: 'margin:0 0 12px;padding-left:22px', ol: 'margin:0 0 12px;padding-left:22px', li: `${f}color:#1F2A37;font-size:15px;line-height:1.6;margin:0 0 4px`, b: `color:${tit}`, code: 'font-family:Consolas,monospace;background:#F1F4F8;padding:1px 4px'};
   d.querySelectorAll('*').forEach(el => { const s = st[el.tagName.toLowerCase()]; if (s) el.setAttribute('style', s); });
   const cab = `${m.logo ? `<img src="${m.logo}" alt="${esc(m.nombre)}" height="56" style="height:56px;max-width:200px;display:block">` : ''}${m.nombre ? `<div style="${f}color:${tit};font-size:16px;font-weight:bold;margin-top:${m.logo ? 8 : 0}px">${esc(m.nombre)}</div>` : ''}`;
-  const pie = [m.nombre, m.web, S.perfil.territorio].filter(Boolean).map(esc).join(' · ');
+  const pie = [m.nombre, m.web, m.email, S.perfil.territorio].filter(Boolean).map(esc).join(' · ');
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F5F8;padding:20px 0"><tr><td align="center">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid #E3E8EF">
 <tr><td style="background:${c1};height:6px;line-height:6px;font-size:0">&nbsp;</td></tr>
@@ -2060,8 +2061,8 @@ function pintaResultado() {
   $('btnWord').onclick = async () => {
     try {
       const m = marcaDe(S.perfil), fecha = new Date(r.fecha).toLocaleDateString(locale()), conMarca = !!(m.nombre || m.logo);
-      const marca = conMarca ? {tit: m.tit, linea: m.c1, nombre: m.nombre, linea2: [S.perfil.territorio, m.web].filter(Boolean).join(' · '), pie: r.titulo, logo: await logoPng(m.logo)} : null;
-      dl(slug(r.titulo) + '.docx', await wordDeMarkdown(r.texto, {titulo: r.titulo, kicker: conMarca ? t(tipoDe(r.tipo).n) : '', subtitulo: conMarca ? fecha : [S.perfil.nombre, fecha].filter(Boolean).join(' · '), pie: t('Preparado con ayuda de IA ({0}) y revisado por la asociación.', APP_NAME), marca}));
+      const marca = conMarca ? {tit: m.tit, linea: m.c1, nombre: m.nombre, linea2: [S.perfil.territorio, m.web].filter(Boolean).join(' · '), pie: [r.titulo, m.email].filter(Boolean).join(' · '), logo: await logoPng(m.logo)} : null;
+      dl(slug(r.titulo) + '.docx', await wordDeMarkdown(r.texto, {titulo: r.titulo, kicker: conMarca ? t(tipoDe(r.tipo).n) : '', subtitulo: conMarca ? fecha : [S.perfil.nombre, fecha].filter(Boolean).join(' · '), marca}));
     } catch (e) { toast(e.message, 7000); }
   };
   /* correo: al pulsar, se copia el correo con formato (HTML) y se abre el webmail con el asunto; si no se pudo copiar, va el texto plano en el cuerpo */
