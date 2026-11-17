@@ -2025,7 +2025,7 @@ function htmlCorreo(r) {
 <tr><td style="background:${c1};height:6px;line-height:6px;font-size:0">&nbsp;</td></tr>
 ${cab ? `<tr><td style="padding:20px 28px 14px;border-bottom:2px solid #${tinte(m.c1, 0.75)}">${cab}</td></tr>` : ''}
 <tr><td style="padding:22px 28px 10px"><div style="${f}color:#${m.c2 && _lum(m.c2) < 0.6 ? m.c2 : '5D7691'};font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase">${esc(t(tipoDe(r.tipo).n))}</div><h1 style="${f}color:${tit};font-size:24px;line-height:1.25;margin:6px 0 16px">${esc(r.titulo)}</h1>${d.innerHTML}</td></tr>
-<tr><td style="padding:16px 28px 20px;background:#F8FAFC;border-top:1px solid #E3E8EF"><p style="${f}color:#5D7691;font-size:12px;line-height:1.5;margin:0">${pie ? pie + '<br>' : ''}<i>${esc(t('Preparado con ayuda de IA ({0}) y revisado por la asociación.', APP_NAME))}</i></p></td></tr>
+${pie ? `<tr><td style="padding:16px 28px 20px;background:#F8FAFC;border-top:1px solid #E3E8EF"><p style="${f}color:#5D7691;font-size:12px;line-height:1.5;margin:0">${pie}</p></td></tr>` : ''}
 </table></td></tr></table>`;
 }
 /* copia síncrona (dentro del clic) con texto HTML y texto plano: funciona antes de abrir la pestaña del correo */
